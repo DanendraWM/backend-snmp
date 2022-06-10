@@ -59,8 +59,12 @@ try {
                     console.log(`PID_audio 2 : ${pid_audio2}`)
                     for (let index = 12; index <= 15; index++) {
                         let id_service = parseInt(data[index].value.replace('    ', '').match(/\d/g));
-                        var service = data[index].value.replace('    ', '');
-                        service_selected == id_service ? console.log(service) : false
+                        if (service_selected == id_service) {
+                            var service = data[index].value.replace('    ', '');
+                            console.log(service)
+                        } else {
+                            false
+                        }
                     }
                     db.query(`UPDATE snmps SET video_bitrate = '${bitrate}', kualitas = '${kualitas}', status_sat = '${status_sat}', margin = '${margin}', status_ip = '${status_ip}', service = '${service == "noSuchObject" ? "NO SELECTION" : service}', status_video = '${status_video}', ts_bitrate = '${ts_bitrate}',PID_audio='${pid_audio1}',PID_audio2='${pid_audio2}' WHERE ID = ${id}`);
                 } catch (error) {
