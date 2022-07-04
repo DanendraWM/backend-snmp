@@ -2,16 +2,18 @@ import express from "express";
 import snmp from 'snmp-node';
 import db from './config/database.js'
 import cors from "cors"
+import Ird from "./models/irdModel.js";
 // import irdRoutes from './routes/irdRoute.js'
 
 const app = express();
 const session = new snmp.Session();
 try {
     await db.authenticate();
+    const count = await Ird.count();
     console.log('connected database');
     setInterval(() => {
         var obj_id = ['.1.3.6.1.4.1.1773.1.3.208.2.2.6.0', '.1.3.6.1.4.1.1773.1.3.208.4.1.2.0', '.1.3.6.1.4.1.1773.1.3.208.2.2.2.0', '.1.3.6.1.4.1.1773.1.3.208.3.3.9.0', '.1.3.6.1.4.1.1773.1.3.208.3.3.3.0', '.1.3.6.1.4.1.1773.1.3.208.3.4.4.1.3.1', '.1.3.6.1.4.1.1773.1.3.208.3.3.8.0', '.1.3.6.1.4.1.1773.1.3.208.3.3.7.0', '.1.3.6.1.4.1.1773.1.3.208.2.1.8.0', '.1.3.6.1.4.1.1773.1.3.208.3.4.2.1.2.1', '.1.3.6.1.4.1.1773.1.3.208.3.4.2.1.2.2', '.1.3.6.1.4.1.1773.1.3.208.4.1.18.0'];
-        for (let id = 1; id <= 6; id++) {
+        for (let id = 1; id <= count; id++) {
             let ip = id + 1
             session.getAll({ oids: obj_id, host: `192.168.112.${ip}`, community: 'public' }, function (error, data) {
                 try {
@@ -83,6 +85,7 @@ try {
 
                 } catch (error) {
                     console.log('Fail :(', error);
+                    db.query(`UPDATE snmps SET video_bitrate = '0', kualitas = '0', status_sat = 'DISCONNECTED', margin = '0', status_ip = 'DISCONNECTED', service = 'DISCONNECTED', status_video = 'DISCONNECTED', ts_bitrate = '0',PID_audio='DISCONNECTED',PID_audio2='DISCONNECTED' WHERE ID = ${id}`);
                 }
             });
         }
