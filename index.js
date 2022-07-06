@@ -69,12 +69,9 @@ try {
                         }
                         session.getAll({ oids: objid_serv, host: `192.168.112.${ip}`, community: 'public' }, function (error, hasil) {
                             for (let index = 0; index < banyak_service; index++) {
-                                let id_service = parseInt(hasil[index].value);
-                                if (parseInt(service_selected) === id_service) {
+                                if (parseInt(service_selected) === parseInt(hasil[index].value)) {
                                     service = hasil[index].value.replace('    ', '');
                                     console.log(service)
-                                } else {
-                                    false
                                 }
                             }
                             db.query(`UPDATE snmps SET video_bitrate = '${bitrate}', kualitas = '${kualitas}', status_sat = '${status_sat}', margin = '${margin}', status_ip = '${status_ip}', service = '${service === undefined ? "NO SELECTION" : service}', status_video = '${status_video}', ts_bitrate = '${ts_bitrate}',PID_audio='${pid_audio1 === 65535 ? "NO SELECTION" : pid_audio1}',PID_audio2='${pid_audio2 === 65535 ? "NO SELECTION" : pid_audio2}' WHERE ID = ${id}`);
