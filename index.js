@@ -41,13 +41,18 @@ try {
                         console.log("status video : Unlicensed");
                         status_video = "Unlicensed"
                     }
-                    if (status_ip == "RUNNING") {
-                        console.log("status ip : LOCKED");
-                        status_ip = "LOCKED"
-                    } else if (status_ip == "ERROR") {
-                        console.log("status ip : UNLOCKED");
+                    if (status_sat == "LOCKED") {
                         status_ip = "UNLOCKED"
+                    } else {
+                        if (status_ip == "RUNNING") {
+                            console.log("status ip : LOCKED");
+                            status_ip = "LOCKED"
+                        } else if (status_ip == "ERROR") {
+                            console.log("status ip : UNLOCKED");
+                            status_ip = "UNLOCKED"
+                        }
                     }
+
                     console.log(`kualitas : ${kualitas}`);
                     let ts_bitrate = data[8].value;
                     console.log(`ts_bitrate : ${ts_bitrate}`)
