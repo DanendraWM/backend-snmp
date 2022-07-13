@@ -12,7 +12,7 @@ try {
     const count = await Ird.count();
     console.log('connected database');
     setInterval(() => {
-        var obj_id = ['.1.3.6.1.4.1.1773.1.3.208.2.2.6.0', '.1.3.6.1.4.1.1773.1.3.208.4.1.2.0', '.1.3.6.1.4.1.1773.1.3.208.2.2.2.0', '.1.3.6.1.4.1.1773.1.3.208.3.3.9.0', '.1.3.6.1.4.1.1773.1.3.208.3.3.3.0', '.1.3.6.1.4.1.1773.1.3.208.3.4.4.1.3.1', '.1.3.6.1.4.1.1773.1.3.208.3.3.8.0', '.1.3.6.1.4.1.1773.1.3.208.3.3.7.0', '.1.3.6.1.4.1.1773.1.3.208.2.1.8.0', '.1.3.6.1.4.1.1773.1.3.208.3.4.2.1.2.1', '.1.3.6.1.4.1.1773.1.3.208.3.4.2.1.2.2', '.1.3.6.1.4.1.1773.1.3.208.4.1.18.0'];
+        var obj_id = ['.1.3.6.1.4.1.1773.1.3.208.2.2.6.0', '.1.3.6.1.4.1.1773.1.3.208.4.1.2.0', '.1.3.6.1.4.1.1773.1.3.208.2.2.2.0', '.1.3.6.1.4.1.1773.1.3.208.3.3.9.0', '.1.3.6.1.4.1.1773.1.3.208.3.3.3.0', '.1.3.6.1.4.1.1773.1.3.208.2.1.19.0', '.1.3.6.1.4.1.1773.1.3.208.3.3.8.0', '.1.3.6.1.4.1.1773.1.3.208.3.3.7.0', '.1.3.6.1.4.1.1773.1.3.208.2.1.8.0', '.1.3.6.1.4.1.1773.1.3.208.3.4.2.1.2.1', '.1.3.6.1.4.1.1773.1.3.208.3.4.2.1.2.2', '.1.3.6.1.4.1.1773.1.3.208.4.1.18.0', '.1.3.6.1.4.1.1773.1.3.208.1.1.1.0'];
         for (let id = 1; id <= count; id++) {
             let ip = id + 1
             session.getAll({ oids: obj_id, host: `192.168.112.${ip}`, community: 'public' }, function (error, data) {
@@ -41,16 +41,12 @@ try {
                         console.log("status video : Unlicensed");
                         status_video = "Unlicensed"
                     }
-                    if (status_sat == "LOCKED") {
+                    if (status_ip == 1) {
+                        console.log("status ip : LOCKED");
+                        status_ip = "LOCKED"
+                    } else if (status_ip == 0) {
+                        console.log("status ip : UNLOCKED");
                         status_ip = "UNLOCKED"
-                    } else {
-                        if (status_ip == "RUNNING") {
-                            console.log("status ip : LOCKED");
-                            status_ip = "LOCKED"
-                        } else if (status_ip == "ERROR") {
-                            console.log("status ip : UNLOCKED");
-                            status_ip = "UNLOCKED"
-                        }
                     }
 
                     console.log(`kualitas : ${kualitas}`);
@@ -61,6 +57,7 @@ try {
                     let pid_audio2 = data[10].value;
                     console.log(`PID_audio 2 : ${pid_audio2}`)
                     var banyak_service = data[11].value;
+                    var temperature = data[12].value;
                     let serve = banyak_service + 1
                     var objid_serv = []
                     var service = "NO SELECTION"
@@ -79,7 +76,7 @@ try {
                                     console.log(service)
                                 }
                             }
-                            db.query(`UPDATE snmps SET video_bitrate = '${bitrate}', kualitas = '${kualitas}', status_sat = '${status_sat}', margin = '${margin}', status_ip = '${status_ip}', service = '${service === undefined ? "NO SELECTION" : service}', status_video = '${status_video}', ts_bitrate = '${ts_bitrate}',PID_audio='${pid_audio1 === 65535 ? "NO SELECTION" : pid_audio1}',PID_audio2='${pid_audio2 === 65535 ? "NO SELECTION" : pid_audio2}' WHERE ID = ${id}`);
+                            db.query(`UPDATE snmps SET video_bitrate = '${bitrate}', kualitas = '${kualitas}', status_sat = '${status_sat}', margin = '${margin}', status_ip = '${status_ip}', service = '${service === undefined ? "NO SELECTION" : service}', status_video = '${status_video}', ts_bitrate = '${ts_bitrate}',PID_audio='${pid_audio1 === 65535 ? "NO SELECTION" : pid_audio1}',PID_audio2='${pid_audio2 === 65535 ? "NO SELECTION" : pid_audio2}',temperature='${temperature}' WHERE ID = ${id}`);
                             console.log("##############################")
                         });
                         objid_serv.splice(0, objid_serv.length);
@@ -87,7 +84,7 @@ try {
 
                 } catch (error) {
                     console.log('Fail :(', error);
-                    db.query(`UPDATE snmps SET video_bitrate = '0', kualitas = '0', status_sat = 'DISCONNECTED', margin = '0', status_ip = 'DISCONNECTED', service = 'DISCONNECTED', status_video = 'DISCONNECTED', ts_bitrate = '0',PID_audio='DISCONNECTED',PID_audio2='DISCONNECTED' WHERE ID = ${id}`);
+                    db.query(`UPDATE snmps SET video_bitrate = '0', kualitas = '0', status_sat = 'DISCONNECTED', margin = '0', status_ip = 'DISCONNECTED', service = 'DISCONNECTED', status_video = 'DISCONNECTED', ts_bitrate = '0',PID_audio='DISCONNECTED',PID_audio2='DISCONNECTED' ,temperature='0' WHERE ID = ${id}`);
                 }
             });
         }
