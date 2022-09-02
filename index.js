@@ -47,6 +47,9 @@ try {
                     } else if (status_ip == 0) {
                         console.log("status ip : UNLOCKED");
                         status_ip = "UNLOCKED"
+                    } else {
+                        console.log("status ip : Not Available");
+                        status_ip = "Not Available"
                     }
 
                     console.log(`kualitas : ${kualitas}`);
@@ -58,29 +61,24 @@ try {
                     console.log(`PID_audio 2 : ${pid_audio2}`)
                     var banyak_service = data[11].value;
                     var temperature = data[12].value;
+                    console.log(`Temperature : ${temperature}`)
                     let serve = banyak_service + 1
                     var objid_serv = []
                     var service = "NO SELECTION"
-                    if (banyak_service === 0) {
-                        false
-                        db.query(`UPDATE snmps SET video_bitrate = '${bitrate}', kualitas = '${kualitas}', status_sat = '${status_sat}', margin = '${margin}', status_ip = '${status_ip}', service = '${service}', status_video = '${status_video}', ts_bitrate = '${ts_bitrate}',PID_audio='${pid_audio1 === 65535 ? "NO SELECTION" : pid_audio1}',PID_audio2='${pid_audio2 === 65535 ? "NO SELECTION" : pid_audio2}' WHERE ID = ${id}`);
-                        console.log("##############################")
-                    } else {
-                        for (let ray = 2; ray <= serve; ray++) {
-                            objid_serv.push(`.1.3.6.1.4.1.1773.1.3.208.4.1.1.1.2.${ray}`);
-                        }
-                        session.getAll({ oids: objid_serv, host: `192.168.112.${ip}`, community: 'public' }, function (error, hasil) {
-                            for (let index = 0; index < banyak_service; index++) {
-                                if (parseInt(service_selected) === parseInt(hasil[index].value)) {
-                                    service = hasil[index].value.replace('    ', '');
-                                    console.log(service)
-                                }
-                            }
-                            db.query(`UPDATE snmps SET video_bitrate = '${bitrate}', kualitas = '${kualitas}', status_sat = '${status_sat}', margin = '${margin}', status_ip = '${status_ip}', service = '${service === undefined ? "NO SELECTION" : service}', status_video = '${status_video}', ts_bitrate = '${ts_bitrate}',PID_audio='${pid_audio1 === 65535 ? "NO SELECTION" : pid_audio1}',PID_audio2='${pid_audio2 === 65535 ? "NO SELECTION" : pid_audio2}',temperature='${temperature}' WHERE ID = ${id}`);
-                            console.log("##############################")
-                        });
-                        objid_serv.splice(0, objid_serv.length);
+                    for (let ray = 2; ray <= serve; ray++) {
+                        objid_serv.push(`.1.3.6.1.4.1.1773.1.3.208.4.1.1.1.2.${ray}`);
                     }
+                    session.getAll({ oids: objid_serv, host: `192.168.112.${ip}`, community: 'public' }, function (error, hasil) {
+                        for (let index = 0; index < banyak_service; index++) {
+                            if (parseInt(service_selected) === parseInt(hasil[index].value)) {
+                                service = hasil[index].value.replace('    ', '');
+                                console.log(service)
+                            }
+                        }
+                        db.query(`UPDATE snmps SET video_bitrate = '${bitrate}', kualitas = '${kualitas}', status_sat = '${status_sat}', margin = '${margin}', status_ip = '${status_ip}', service = '${service === undefined ? "NO SELECTION" : service}', status_video = '${status_video}', ts_bitrate = '${ts_bitrate}',PID_audio='${pid_audio1 === 65535 ? "NO SELECTION" : pid_audio1}',PID_audio2='${pid_audio2 === 65535 ? "NO SELECTION" : pid_audio2}',temperature='${temperature}' WHERE ID = ${id}`);
+                        console.log("##############################")
+                    });
+                    objid_serv.splice(0, objid_serv.length);
 
                 } catch (error) {
                     console.log('Fail :(', error);
